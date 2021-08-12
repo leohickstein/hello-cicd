@@ -18,9 +18,14 @@ phases:
   #   commands:
   #     - cp ./settings.xml /root/.m2/settings.xml
   #     - cp ./settings-security.xml /root/.m2/settings-security.xml
+  pre_build:
+    commands:
+      # - cp ./mulesoftmeetup/settings.xml /root/.m2/settings.xml
+      # - cd mulesoftmeetup/
+      - mvn clean test
   build:
     commands:
-      - mvn mvn -B -U -e -V clean -DskipTests package
+      - mvn package -DskipTests
 # artifacts:
 #   files:
 #     - demo-custom-connector/target/*.jar
