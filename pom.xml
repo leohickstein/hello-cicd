@@ -47,6 +47,14 @@
 						<workerType>${cloudhub.worker}</workerType> <!-- Size of the worker where is going to by deployed --> 
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
+					 <executions>
+                        <execution>
+                            <id>deploy</id>
+                            <goals>
+                                <goal>deploy</goal>
+                            </goals>
+                        </execution>
+                    </executions>
 				</configuration>
 			</plugin>
 		</plugins>
