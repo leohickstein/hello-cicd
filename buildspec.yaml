@@ -1,0 +1,31 @@
+version: 0.2
+
+# env:
+#   variables:
+#     app_runtime: "3.8.2"
+#     anypoint_platform_environment: "Demo"
+#     anypoint_platform_workertype: "SMALL"
+#     anypoint_platform_workers: "1"
+#     anypoint_platform_region: "eu-west-1"
+#   parameter-store:
+#     anypoint_platform_client_id: "demo-anypoint-client-id"
+#     anypoint_platform_client_secret: "demo-anypoint-client-secret"
+
+phases:
+  # install:
+  #   runtime-versions:
+  #     java: openjdk8
+  #   commands:
+  #     - cp ./settings.xml /root/.m2/settings.xml
+  #     - cp ./settings-security.xml /root/.m2/settings-security.xml
+  build:
+    commands:
+      - mvn mvn -B -U -e -V clean -DskipTests package
+# artifacts:
+#   files:
+#     - demo-custom-connector/target/*.jar
+#     - demo-custom-connector/target/*.zip
+
+# cache:
+#   paths:
+#     - "/root/.m2/**/*"
