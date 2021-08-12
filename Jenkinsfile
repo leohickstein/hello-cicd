@@ -1,6 +1,7 @@
 pipeline {
 
   agent any
+  
   environment {
     // adding a comment for the commit test
     DEPLOY_CREDS = credentials('deploy-anypoint-user')
@@ -8,6 +9,7 @@ pipeline {
     BG = "Hickstein Lab"
     WORKER = "Micro"
   }
+  
   stages {
     stage('Build') {
       steps {
@@ -22,7 +24,14 @@ pipeline {
     }
 
      stage('Deploy Development') {
-      environment {
+        when {
+          allOf {
+              expression { env.BRANCH_NAME == "origin/develop" }
+              expression { params.merged == true }
+              expression { params.current_status == "closed" }
+          }
+      }
+       environment {
         ENVIRONMENT = 'Sandbox'
         APP_NAME = 'hello-cicd-api'
       }
