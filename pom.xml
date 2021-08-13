@@ -107,7 +107,7 @@
 		<repository>
 			<id>leohickstein-repository-manager-leohickstein-java</id>
 			<name>leohickstein-repository-manager-leohickstein-java</name>
-			<url>https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/</url>
+			<url>${env.CODEARTIFACT_REPOSITORY}</url>
 		</repository>
 	</distributionManagement>
 
