@@ -13,8 +13,7 @@ phases:
       java: openjdk8
     commands:
       - echo Starting install phase...
-      # - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@rubygems.pkg.github.com/applyboard/
-      - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@maven.pkg.github.com/applyboard/
+      - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@maven.pkg.github.com/leohickstein/
       - |
         BUILD_INFO=$(jq -n \
                 --arg url "$CODEBUILD_SOURCE_REPO_URL" \
@@ -27,7 +26,8 @@ phases:
       - echo "${BUILD_INFO}" | jq . > $CODEBUILD_SRC_DIR/build-info.json
       - echo Installing AWSCLI for codeartifact authorization token
       - pip install awscli --upgrade --user 
-      - export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
+      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
+      - export CODEARTIFACT_REGISTRY=https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/
   pre_build:
     commands:
       - echo Starting pre_build phase...
@@ -49,7 +49,7 @@ phases:
               -Dfile=./commons-cli-1.4.jar   \
               -Dpackaging=jar                \
               -DrepositoryId=codeartifact    \
-              -Durl=https://my_domain-111122223333.d.codeartifact.region.amazonaws.com/maven/repo-name/
+              -Durl=$CODEARTIFACT_REGISTRY
         else 
           echo "Nothing to publish to CodeArtifact. Webhook head ref is not master." 
         fi 
