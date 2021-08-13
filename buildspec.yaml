@@ -1,31 +1,61 @@
 version: 0.2
 
-# env:
-#   variables:
-#     app_runtime: "3.8.2"
-#     anypoint_platform_environment: "Demo"
-#     anypoint_platform_workertype: "SMALL"
-#     anypoint_platform_workers: "1"
-#     anypoint_platform_region: "eu-west-1"
-#   parameter-store:
-#     anypoint_platform_client_id: "demo-anypoint-client-id"
-#     anypoint_platform_client_secret: "demo-anypoint-client-secret"
+env:
+  secrets-manager:
+    JENKINS_API_USERNAME: jenkins_config:JENKINS_API_USERNAME
+    JENKINS_API_TOKEN: jenkins_config:JENKINS_API_TOKEN
+    GH_USER: github-token:user
+    GH_TOKEN: github-token:token
 
 phases:
-  # install:
-  #   runtime-versions:
-  #     java: openjdk8
-  #   commands:
-  #     - cp ./settings.xml /root/.m2/settings.xml
-  #     - cp ./settings-security.xml /root/.m2/settings-security.xml
+  install:
+    runtime-versions:
+      java: openjdk8
+    commands:
+      - echo Starting install phase...
+      # - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@rubygems.pkg.github.com/applyboard/
+      - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@maven.pkg.github.com/applyboard/
+      - |
+        BUILD_INFO=$(jq -n \
+                --arg url "$CODEBUILD_SOURCE_REPO_URL" \
+                --arg v "$CODEBUILD_SOURCE_VERSION" \
+                --arg c "$CODEBUILD_RESOLVED_SOURCE_VERSION" \
+                --arg b "$CODEBUILD_BUILD_ID" \
+                --arg n "$CODEBUILD_BUILD_NUMBER" \
+                --arg t "$CODEBUILD_START_TIME" \
+               '{source: { url: $url, version: $v,commit: $c }, build: { id: $b, number: $n, time: $t } }')
+      - echo "${BUILD_INFO}" | jq . > $CODEBUILD_SRC_DIR/build-info.json
+      - echo Installing AWSCLI for codeartifact authorization token
+      - pip install awscli --upgrade --user 
+      - export CODEARTIFACT_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
   pre_build:
     commands:
-      # - cp ./mulesoftmeetup/settings.xml /root/.m2/settings.xml
-      # - cd mulesoftmeetup/
+      - echo Starting pre_build phase...
       - mvn clean test
   build:
     commands:
+      - echo Starting build phase...
       - mvn package -DskipTests
+  post_build: 
+    commands: 
+      - echo running post build phases 
+      - echo $CODEBUILD_WEBHOOK_EVENT and $CODEBUILD_WEBHOOK_HEAD_REF 
+      - | 
+        if [[ "$CODEBUILD_WEBHOOK_EVENT" == "PUSH" && "$CODEBUILD_WEBHOOK_HEAD_REF" == "refs/heads/master" ]]; then 
+          - |
+            mvn deploy:deploy-file -DgroupId=commons-cli          \
+              -DartifactId=commons-cli       \
+              -Dversion=1.4                  \
+              -Dfile=./commons-cli-1.4.jar   \
+              -Dpackaging=jar                \
+              -DrepositoryId=codeartifact    \
+              -Durl=https://my_domain-111122223333.d.codeartifact.region.amazonaws.com/maven/repo-name/
+        else 
+          echo "Nothing to publish to CodeArtifact. Webhook head ref is not master." 
+        fi 
+      - echo Cleaning up containers 
+      - docker-compose rm -svf $SERVICE_NAME 
+      - echo Post-build phase is completed
 # artifacts:
 #   files:
 #     - demo-custom-connector/target/*.jar
