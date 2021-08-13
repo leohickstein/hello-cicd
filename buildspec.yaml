@@ -10,7 +10,7 @@ env:
 phases:
   install:
     runtime-versions:
-      java: openjdk8
+      java: corretto8
     commands:
       - echo Starting install phase...
       - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@maven.pkg.github.com/leohickstein/
