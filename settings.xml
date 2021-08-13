@@ -1,31 +1,9 @@
-<!-- <profiles>
-  <profile>
-    <id>leohickstein-repository-manager-leohickstein-java</id>
-    <activation>
-      <activeByDefault>true</activeByDefault>
-    </activation>
-    <repositories>
-      <repository>
-        <id>leohickstein-repository-manager-leohickstein-java</id>
-        <url>https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/</url>
-      </repository>
-    </repositories>
-  </profile>
-</profiles>
-
-<servers>
-  <server>
-    <id>leohickstein-repository-manager-leohickstein-java</id>
-    <username>aws</username>
-    <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
-  </server>
-</servers>
-
-<mirrors>
-  <mirror>
-    <id>leohickstein-repository-manager-leohickstein-java</id>
-    <name>leohickstein-repository-manager-leohickstein-java</name>
-    <url>https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/</url>
-    <mirrorOf>*</mirrorOf>
-  </mirror>
-</mirrors> -->
+<settings>
+  <servers>
+    <server>
+      <id>codeartifact</id>
+      <username>aws</username>
+      <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
+    </server>
+  </servers>
+</settings>
