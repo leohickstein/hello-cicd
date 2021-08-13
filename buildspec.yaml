@@ -27,15 +27,17 @@ phases:
       - echo Installing AWSCLI for codeartifact authorization token
       - pip install awscli --upgrade --user 
       - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
-      - export CODEARTIFACT_REGISTRY=https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/
+      - export CODEARTIFACT_REPOSITORY=https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/
   pre_build:
     commands:
-      - echo Starting pre_build phase...
-      - mvn clean test
+      - echo Nothing to do in the pre_build phase...
+      # - mvn clean test ??
   build:
     commands:
       - echo Starting build phase...
-      - mvn package -DskipTests
+      # - mvn package -DskipTests OR?
+      # - mvn clean test ??
+      mvn -s settings.xml clean package deploy
   post_build: 
     commands: 
       - echo running post build phases 
@@ -53,8 +55,6 @@ phases:
         else 
           echo "Nothing to publish to CodeArtifact. Webhook head ref is not master." 
         fi 
-      - echo Cleaning up containers 
-      - docker-compose rm -svf $SERVICE_NAME 
       - echo Post-build phase is completed
 # artifacts:
 #   files:
