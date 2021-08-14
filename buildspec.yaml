@@ -23,7 +23,7 @@ phases:
                 --arg n "$CODEBUILD_BUILD_NUMBER" \
                 --arg t "$CODEBUILD_START_TIME" \
                '{source: { url: $url, version: $v,commit: $c }, build: { id: $b, number: $n, time: $t } }')
-      - echo "${BUILD_INFO}" | jq . > $CODEBUILD_SRC_DIR/build-info.json
+      - echo "${BUILD_INFO}" # | jq . > $CODEBUILD_SRC_DIR/build-info.json
       - echo Installing AWSCLI for codeartifact authorization token
       - pip install awscli --upgrade --user 
       - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
@@ -36,7 +36,7 @@ phases:
     commands:
       - echo Starting build phase...
       # - mvn package -DskipTests OR?
-      - mvn clean test ??
+      - mvn clean test
       # - mvn -s settings.xml clean package deploy
   post_build: 
     commands: 
