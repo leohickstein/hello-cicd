@@ -36,14 +36,14 @@ phases:
     commands:
       - echo Starting build phase...
       # - mvn package -DskipTests OR?
-      # - mvn clean test ??
-      - mvn -s settings.xml clean package deploy
+      - mvn clean test ??
+      # - mvn -s settings.xml clean package deploy
   post_build: 
     commands: 
       - echo running post build phases 
       - echo $CODEBUILD_WEBHOOK_EVENT and $CODEBUILD_WEBHOOK_HEAD_REF 
       - | 
-        if [[ "$CODEBUILD_WEBHOOK_EVENT" == "PUSH" && "$CODEBUILD_WEBHOOK_HEAD_REF" == "refs/heads/master" ]]; then 
+        if [[ "$CODEBUILD_WEBHOOK_EVENT" == "PUSH" ]]; then 
           - |
             mvn deploy:deploy-file -DgroupId=commons-cli          \
               -DartifactId=commons-cli       \
