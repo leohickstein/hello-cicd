@@ -43,8 +43,6 @@ phases:
       - echo running post build phases 
       - echo $CODEBUILD_WEBHOOK_EVENT and $CODEBUILD_WEBHOOK_HEAD_REF 
       - | 
-        if [[ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" && "$CODEBUILD_WEBHOOK_HEAD_REF" == "refs/heads/develop" ]]; then 
-          - |
             mvn deploy:deploy-file -DgroupId=commons-cli          \
               -DartifactId=commons-cli       \
               -Dversion=1.4                  \
@@ -52,9 +50,6 @@ phases:
               -Dpackaging=jar                \
               -DrepositoryId=codeartifact    \
               -Durl=$CODEARTIFACT_REGISTRY
-        else 
-          echo "Nothing to publish to CodeArtifact. Webhook head ref is not master." 
-        fi 
       - echo Post-build phase is completed
 # artifacts:
 #   files:
