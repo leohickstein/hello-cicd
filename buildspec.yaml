@@ -10,16 +10,6 @@ phases:
     runtime-versions:
       java: corretto8
     commands:
-      - |
-        BUILD_INFO=$(jq -n \
-                --arg url "$CODEBUILD_SOURCE_REPO_URL" \
-                --arg v "$CODEBUILD_SOURCE_VERSION" \
-                --arg c "$CODEBUILD_RESOLVED_SOURCE_VERSION" \
-                --arg b "$CODEBUILD_BUILD_ID" \
-                --arg n "$CODEBUILD_BUILD_NUMBER" \
-                --arg t "$CODEBUILD_START_TIME" \
-               '{source: { url: $url, version: $v,commit: $c }, build: { id: $b, number: $n, time: $t } }')
-      - echo "${BUILD_INFO}" # | jq . > $CODEBUILD_SRC_DIR/build-info.json
       - echo Installing AWSCLI for codeartifact authorization token
       - pip install awscli --upgrade --user 
   pre_build:
