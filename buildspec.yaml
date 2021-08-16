@@ -4,58 +4,25 @@ env:
   secrets-manager:
     JENKINS_API_USERNAME: jenkins_config:JENKINS_API_USERNAME
     JENKINS_API_TOKEN: jenkins_config:JENKINS_API_TOKEN
-    GH_USER: github-token:user
-    GH_TOKEN: github-token:token
 
 phases:
   install:
     runtime-versions:
       java: corretto8
     commands:
-      - echo Starting install phase...
-      - export GITHUB_SOURCE=https://${GH_USER}:${GH_TOKEN}@maven.pkg.github.com/leohickstein/
-      - |
-        BUILD_INFO=$(jq -n \
-                --arg url "$CODEBUILD_SOURCE_REPO_URL" \
-                --arg v "$CODEBUILD_SOURCE_VERSION" \
-                --arg c "$CODEBUILD_RESOLVED_SOURCE_VERSION" \
-                --arg b "$CODEBUILD_BUILD_ID" \
-                --arg n "$CODEBUILD_BUILD_NUMBER" \
-                --arg t "$CODEBUILD_START_TIME" \
-               '{source: { url: $url, version: $v,commit: $c }, build: { id: $b, number: $n, time: $t } }')
-      - echo "${BUILD_INFO}" # | jq . > $CODEBUILD_SRC_DIR/build-info.json
       - echo Installing AWSCLI for codeartifact authorization token
       - pip install awscli --upgrade --user 
-      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken)
-      - export CODEARTIFACT_REPOSITORY=https://leohickstein-repository-manager-611095324135.d.codeartifact.us-west-2.amazonaws.com/maven/leohickstein-java/
   pre_build:
     commands:
-      - echo Nothing to do in the pre_build phase...
-      # - mvn clean test ??
+      - export STAMP="1.0-`date +%Y%m%d.%H%M%S`"
+      - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken --output text
   build:
     commands:
-      - echo Starting build phase...
-      # - mvn package -DskipTests OR?
-      - mvn clean test
-      # - mvn -s settings.xml clean package deploy
+      - mvn --no-transfer-progress versions:set -DnewVersion=$STAMP
+      - mvn --no-transfer-progress -s settings.xml clean package deploy
   post_build: 
     commands: 
-      - echo running post build phases 
-      - echo $CODEBUILD_WEBHOOK_EVENT and $CODEBUILD_WEBHOOK_HEAD_REF 
-      - | 
-        if [[ "$CODEBUILD_WEBHOOK_EVENT" == "PULL_REQUEST_MERGED" && "$CODEBUILD_WEBHOOK_HEAD_REF" == "refs/heads/develop" ]]; then 
-          - |
-            mvn deploy:deploy-file -DgroupId=commons-cli          \
-              -DartifactId=commons-cli       \
-              -Dversion=1.4                  \
-              -Dfile=./commons-cli-1.4.jar   \
-              -Dpackaging=jar                \
-              -DrepositoryId=codeartifact    \
-              -Durl=$CODEARTIFACT_REGISTRY
-        else 
-          echo "Nothing to publish to CodeArtifact. Webhook head ref is not master." 
-        fi 
-      - echo Post-build phase is completed
+
 # artifacts:
 #   files:
 #     - demo-custom-connector/target/*.jar
