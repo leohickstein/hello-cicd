@@ -1,7 +1,7 @@
 <settings>
   <servers>
     <server>
-      <id>codeartifact</id>
+      <id>leohickstein-repository-manager-leohickstein-java</id>
       <username>aws</username>
       <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
     </server>
