@@ -10,8 +10,6 @@ phases:
     runtime-versions:
       java: corretto8
     commands:
-      #- echo Installing AWSCLI for codeartifact authorization token
-      #- pip install awscli --upgrade --user 
   pre_build:
     commands:
       #- export STAMP="1.0-`date +%Y%m%d.%H%M%S`"
