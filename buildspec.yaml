@@ -25,9 +25,9 @@ phases:
 
 artifacts:
   files:
-    - target/hello-cicd-$STAMP.jar
-  name: hello-cicd-$STAMP.jar
+    - target/*.jar
+  name: hello-cicd-$(date +%Y-%m-%d) 
 
-# cache:
-#   paths:
-#     - "/root/.m2/**/*"
+cache:
+  paths:
+    - "/root/.m2/**/*"
