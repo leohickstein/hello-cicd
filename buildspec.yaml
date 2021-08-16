@@ -14,7 +14,7 @@ phases:
       - pip install awscli --upgrade --user 
   pre_build:
     commands:
-      - export STAMP="1.0.0-`date +%Y%m%d.%H%M%S`"
+      - export STAMP="1.0-`date +%Y%m%d.%H%M%S`"
       - export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token --domain leohickstein-repository-manager --domain-owner 611095324135 --query authorizationToken --output text`
   build:
     commands:
