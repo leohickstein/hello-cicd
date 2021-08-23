@@ -37,8 +37,11 @@ pipeline {
         //RETRIEVE CREDENTIALS FROM 
         APP_NAME = 'hello-cicd-api'
       }
+       // add a install step for newman
       steps {
             bat 'mvn -U -V -e -B -DskipTests deploy -DmuleDeploy -Dmule.version="%MULE_VERSION%" -Danypoint.username="%DEPLOY_CREDS_USR%" -Danypoint.password="%DEPLOY_CREDS_PSW%" -Dcloudhub.app="%APP_NAME%" -Dcloudhub.environment="%ENVIRONMENT%" -Dcloudhub.bg="%BG%" -Dcloudhub.worker="%WORKER%"'
+        // run newman specifying env as per env variable
+        // export report with newman so that it can be accessed later if needed
       }
     }
     
