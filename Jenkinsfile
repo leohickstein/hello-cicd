@@ -21,9 +21,20 @@ pipeline {
       }
     }
 
-     stage('Deploy Development') {
+   stage('Deploy Development') {
       environment {
         ENVIRONMENT = 'Sandbox'
+        APP_NAME = 'hello-cicd-api'
+      }
+      steps {
+            bat 'mvn -U -V -e -B -DskipTests deploy -DmuleDeploy -Dmule.version="%MULE_VERSION%" -Danypoint.username="%DEPLOY_CREDS_USR%" -Danypoint.password="%DEPLOY_CREDS_PSW%" -Dcloudhub.app="%APP_NAME%" -Dcloudhub.environment="%ENVIRONMENT%" -Dcloudhub.bg="%BG%" -Dcloudhub.worker="%WORKER%"'
+      }
+    }
+    
+     stage('Deploy to QA') {
+      environment {
+        ENVIRONMENT = 'QA'
+        //RETRIEVE CREDENTIALS FROM 
         APP_NAME = 'hello-cicd-api'
       }
       steps {
